@@ -61,11 +61,28 @@ export LICENSE_API_TOKEN='aksec_...'
 
 ```bash
 cp secrets.env.example secrets.env
-# отредактируйте secrets.env
+# В secrets.env задайте LICENSING_ADMIN_PASSWORD=...
 docker compose up --build
 ```
 
-UI: http://localhost:8080/admin/login
+- На этой машине: http://localhost:8080/admin/login  
+- **Из локальной сети** (другой ПК, сканер): `http://<IP-этого-хоста>:8080/admin/login`
+
+Узнать IP (Linux):
+
+```bash
+hostname -I | awk '{print $1}'
+```
+
+Пример для сканера в той же сети:
+
+```bash
+export LICENSE_API_BASE_URL="http://192.168.1.50:8080"
+```
+
+Другой порт на хосте: `LICENSING_PORT=9080 docker compose up --build`
+
+Если с других машин не открывается — проверьте файрвол (например `sudo ufw allow 8080/tcp`).
 
 ## API
 
