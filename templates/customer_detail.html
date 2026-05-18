@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ customer.name }}{% endblock %}
+{% block body %}
+<p><a href="/admin/">← Клиенты</a> · <a href="/admin/logout">Выйти</a></p>
+<h1>{{ customer.name }}</h1>
+{% if new_token %}
+<div class="card ok">
+  <p><strong>Сохраните токен сканера</strong> (больше не будет показан):</p>
+  <p class="mono">{{ new_token }}</p>
+  <p>На сканере: <code>LICENSE_API_TOKEN=…</code> и <code>LICENSE_API_BASE_URL=https://…</code></p>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Новая лицензия</h2>
+  <form method="post" action="/admin/licenses">
+    <input type="hidden" name="customer_id" value="{{ customer.id }}"/>
+    <p><label>Истекает (UTC, ISO)<br/><input type="text" name="expires_at" placeholder="2027-12-31T23:59:59+00:00" required/></label></p>
+    <p><label>Instance ID (опционально, /etc/machine-id)<br/><input type="text" name="instance_id" placeholder="оставьте пустым — привяжется при первом check"/></label></p>
+    <p><label>Заметки<br/><input type="text" name="notes"/></label></p>
+    <p><input type="submit" value="Создать лицензию"/></p>
+  </form>
+</div>
+
+<h2>Лицензии</h2>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Истекает</th><th>Instance</th><th>Статус</th><th>Действия</th></tr>
+  </thead>
+  <tbody>
+  {% for lic in customer.licenses %}
+    <tr>
+      <td class="mono">{{ lic.id[:8] }}…</td>
+      <td>{{ lic.expires_at }}</td>
+      <td class="mono">{{ lic.instance_id or "—" }}</td>
+      <td>{% set st = license_statuses[lic.id] %}{% if st == 'revoked' %}<span class="error">revoked</span>{% elif st == 'expired' %}expired{% else %}active{% endif %}</td>
+      <td>
+        {% if not lic.revoked_at %}
+        <form method="post" action="/admin/licenses/{{ lic.id }}/revoke" class="inline" onsubmit="return confirm('Отозвать лицензию?');">
+          <button type="submit">Отозвать</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <form method="post" action="/admin/licenses/{{ lic.id }}/instance" style="display:flex; gap:0.5rem; align-items:end; flex-wrap:wrap;">
+          <label>Instance ID<br/><input type="text" name="instance_id" value="{{ lic.instance_id or '' }}" placeholder="machine-id"/></label>
+          <button type="submit">Сохранить instance</button>
+        </form>
+        <form method="post" action="/admin/tokens" style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:end; flex-wrap:wrap;">
+          <input type="hidden" name="license_id" value="{{ lic.id }}"/>
+          <label>Метка токена<br/><input type="text" name="label" placeholder="prod-scanner-1"/></label>
+          <button type="submit">Выпустить токен сканера</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">Нет лицензий</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
