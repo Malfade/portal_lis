@@ -10,10 +10,10 @@ os.environ["LICENSING_ADMIN_PASSWORD"] = "test-admin-password"
 os.environ["LICENSING_SESSION_SECRET"] = "unit-test-secret-key-32bytes-min!!"
 os.environ["LICENSING_RATE_LIMIT_PER_MINUTE"] = "10000"
 
-from licensing.db import Base, engine
+from licensing.db import Base, ensure_schema, get_engine
 from licensing.main import app
 
-Base.metadata.create_all(bind=engine)
+ensure_schema()
 
 
 @pytest.fixture

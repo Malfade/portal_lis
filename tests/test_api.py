@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from licensing.crypto_tokens import generate_scanner_token, hash_scanner_token
-from licensing.db import SessionLocal
+from licensing.db import get_session_factory
 from licensing.models import Customer, License, ScannerApiToken
 
 
@@ -10,7 +10,7 @@ def _future(days=30):
 
 
 def _seed_active_token(instance_id: str | None = None):
-    db = SessionLocal()
+    db = get_session_factory()()
     c = Customer(name="Acme")
     db.add(c)
     db.commit()

@@ -2,12 +2,14 @@ import os
 
 
 def normalize_database_url(url: str) -> str:
-    """Convert Vercel/Neon postgres:// URLs for SQLAlchemy + psycopg2."""
+    """Convert Vercel/Neon postgres:// URLs for SQLAlchemy + psycopg (v3)."""
     url = url.strip()
     if url.startswith("postgres://"):
-        url = "postgresql+psycopg2://" + url[len("postgres://") :]
-    elif url.startswith("postgresql://") and "+psycopg2" not in url.split("://", 1)[0]:
-        url = "postgresql+psycopg2://" + url[len("postgresql://") :]
+        url = "postgresql+psycopg://" + url[len("postgres://") :]
+    elif url.startswith("postgresql://") and "+" not in url.split("://", 1)[0]:
+        url = "postgresql+psycopg://" + url[len("postgresql://") :]
+    elif "+psycopg2" in url:
+        url = url.replace("+psycopg2", "+psycopg", 1)
 
     if url.startswith("postgresql") and "sslmode=" not in url:
         sep = "&" if "?" in url else "?"
