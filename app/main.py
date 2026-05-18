@@ -1,33 +1,16 @@
 import os
-from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
-from sqlalchemy.engine.url import make_url
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin_routes import router as admin_router
 from app.api_v1 import router as api_v1_router
 from app.config import get_settings
-from app.db import Base, engine
+from app.db import ensure_schema
 
-
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    u = make_url(get_settings().database_url)
-    if u.drivername == "sqlite" and u.database and u.database != ":memory:":
-        Path(u.database).parent.mkdir(parents=True, exist_ok=True)
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as exc:
-        # Visible in Vercel → Deployments → Functions → Logs
-        print(f"licensing-portal: database init failed: {exc}", flush=True)
-        raise
-    yield
-
-
-app = FastAPI(title="Ak-Shumkar licensing portal", lifespan=lifespan)
+# No lifespan DB init — on Vercel a failing lifespan crashes every route including /health.
+app = FastAPI(title="Ak-Shumkar licensing portal")
 app.add_middleware(
     SessionMiddleware,
     secret_key=get_settings().session_secret,
@@ -46,3 +29,15 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/health/db")
+def health_db():
+    try:
+        ensure_schema()
+        return {"status": "ok", "database": "connected"}
+    except Exception as exc:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "database": str(exc)},
+        )

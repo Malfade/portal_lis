@@ -5,9 +5,13 @@ def normalize_database_url(url: str) -> str:
     """Convert Vercel/Neon postgres:// URLs for SQLAlchemy + psycopg2."""
     url = url.strip()
     if url.startswith("postgres://"):
-        return "postgresql+psycopg2://" + url[len("postgres://") :]
-    if url.startswith("postgresql://") and "+psycopg2" not in url.split("://", 1)[0]:
-        return "postgresql+psycopg2://" + url[len("postgresql://") :]
+        url = "postgresql+psycopg2://" + url[len("postgres://") :]
+    elif url.startswith("postgresql://") and "+psycopg2" not in url.split("://", 1)[0]:
+        url = "postgresql+psycopg2://" + url[len("postgresql://") :]
+
+    if url.startswith("postgresql") and "sslmode=" not in url:
+        sep = "&" if "?" in url else "?"
+        url = f"{url}{sep}sslmode=require"
     return url
 
 
@@ -30,7 +34,6 @@ class Settings:
         if explicit:
             return normalize_database_url(explicit)
 
-        # Vercel Postgres / Storage integration injects these names:
         for key in (
             "POSTGRES_URL",
             "DATABASE_URL",
