@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from app.datetime_util import license_display_status
-from app.models import License
+from licensing.datetime_util import license_display_status
+from licensing.models import License
 
 
 def test_license_display_status_naive_expires_at():

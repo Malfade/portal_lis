@@ -10,8 +10,8 @@ os.environ["LICENSING_ADMIN_PASSWORD"] = "test-admin-password"
 os.environ["LICENSING_SESSION_SECRET"] = "unit-test-secret-key-32bytes-min!!"
 os.environ["LICENSING_RATE_LIMIT_PER_MINUTE"] = "10000"
 
-from app.db import Base, engine
-from app.main import app
+from licensing.db import Base, engine
+from licensing.main import app
 
 Base.metadata.create_all(bind=engine)
 

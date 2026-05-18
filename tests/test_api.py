@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
-from app.crypto_tokens import generate_scanner_token, hash_scanner_token
-from app.db import SessionLocal
-from app.models import Customer, License, ScannerApiToken
+from licensing.crypto_tokens import generate_scanner_token, hash_scanner_token
+from licensing.db import SessionLocal
+from licensing.models import Customer, License, ScannerApiToken
 
 
 def _future(days=30):

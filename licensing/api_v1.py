@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.crypto_tokens import hash_scanner_token
-from app.datetime_util import as_utc, utcnow
-from app.db import get_db
-from app.models import License, ScannerApiToken
-from app.rate_limit import rate_limiter
-from app.schemas import LicenseStatusResponse
+from licensing.crypto_tokens import hash_scanner_token
+from licensing.datetime_util import as_utc, utcnow
+from licensing.db import get_db
+from licensing.models import License, ScannerApiToken
+from licensing.rate_limit import rate_limiter
+from licensing.schemas import LicenseStatusResponse
 
 router = APIRouter(prefix="/v1", tags=["v1"])
 

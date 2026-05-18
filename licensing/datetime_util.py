@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from app.models import License
+from licensing.models import License
 
 
 def utcnow() -> datetime:

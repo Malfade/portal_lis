@@ -4,10 +4,10 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.admin_routes import router as admin_router
-from app.api_v1 import router as api_v1_router
-from app.config import get_settings
-from app.db import ensure_schema
+from licensing.admin_routes import router as admin_router
+from licensing.api_v1 import router as api_v1_router
+from licensing.config import get_settings
+from licensing.db import ensure_schema
 
 # No lifespan DB init — on Vercel a failing lifespan crashes every route including /health.
 app = FastAPI(title="Ak-Shumkar licensing portal")

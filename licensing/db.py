@@ -7,7 +7,7 @@ from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy.pool import NullPool
 
-from app.config import get_settings
+from licensing.config import get_settings
 
 _schema_lock = threading.Lock()
 _schema_ready = False

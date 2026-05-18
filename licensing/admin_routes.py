@@ -6,11 +6,11 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.config import get_settings
-from app.crypto_tokens import generate_scanner_token, hash_scanner_token
-from app.datetime_util import license_display_status, utcnow
-from app.db import get_db
-from app.models import Customer, License, ScannerApiToken
+from licensing.config import get_settings
+from licensing.crypto_tokens import generate_scanner_token, hash_scanner_token
+from licensing.datetime_util import license_display_status, utcnow
+from licensing.db import get_db
+from licensing.models import Customer, License, ScannerApiToken
 
 templates = Jinja2Templates(
     directory=str(Path(__file__).resolve().parent.parent / "templates")

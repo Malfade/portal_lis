@@ -1,4 +1,4 @@
-from app.config import normalize_database_url
+from licensing.config import normalize_database_url
 
 
 def test_normalize_postgres_url():

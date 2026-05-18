@@ -1,7 +1,7 @@
 import time
 from collections import defaultdict
 
-from app.config import get_settings
+from licensing.config import get_settings
 
 
 class SimpleRateLimiter:
