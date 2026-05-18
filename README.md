@@ -12,19 +12,25 @@
 |------------|--------|
 | `LICENSING_ADMIN_PASSWORD` | пароль входа в `/admin/login` |
 | `LICENSING_SESSION_SECRET` | `openssl rand -hex 32` |
-| `LICENSING_DATABASE_URL` | см. ниже |
 
 ### База данных
 
-На Vercel **нельзя** полагаться на SQLite в файле: диск эфемерный, данные пропадают.
+Подключите **Vercel Postgres** (Storage) — переменные `POSTGRES_URL` / `DATABASE_URL` подхватываются **автоматически**.
 
-Рекомендуется **Neon**, **Vercel Postgres** или **Supabase**:
+Либо задайте вручную:
 
 ```text
-postgresql+psycopg2://USER:PASSWORD@HOST/DBNAME?sslmode=require
+LICENSING_DATABASE_URL=postgresql+psycopg2://...
 ```
 
-Без `LICENSING_DATABASE_URL` на Vercel используется временный `sqlite:////tmp/licensing.db` (только для проверки, данные не сохраняются между вызовами).
+(можно вставить `postgres://...` из Vercel — конвертируется в коде).
+
+**Важно:** после смены переменных нажмите **Redeploy** (Vercel показывает уведомление).
+
+### Деплой только с актуального коммита
+
+В логе сборки должно быть **не** `ad740b0`, а коммит с `pyproject.toml` и `app/admin_routes.py`.  
+Deployments → выберите последний коммит на `main` → **Redeploy**.
 
 ### Проверка после деплоя
 

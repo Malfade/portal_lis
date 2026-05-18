@@ -18,7 +18,12 @@ async def lifespan(_: FastAPI):
     u = make_url(get_settings().database_url)
     if u.drivername == "sqlite" and u.database and u.database != ":memory:":
         Path(u.database).parent.mkdir(parents=True, exist_ok=True)
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        # Visible in Vercel → Deployments → Functions → Logs
+        print(f"licensing-portal: database init failed: {exc}", flush=True)
+        raise
     yield
 
 

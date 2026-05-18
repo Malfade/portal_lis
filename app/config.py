@@ -1,6 +1,16 @@
 import os
 
 
+def normalize_database_url(url: str) -> str:
+    """Convert Vercel/Neon postgres:// URLs for SQLAlchemy + psycopg2."""
+    url = url.strip()
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg2://" + url[len("postgres://") :]
+    if url.startswith("postgresql://") and "+psycopg2" not in url.split("://", 1)[0]:
+        return "postgresql+psycopg2://" + url[len("postgresql://") :]
+    return url
+
+
 class Settings:
     def __init__(self):
         self.database_url = self._database_url()
@@ -18,9 +28,20 @@ class Settings:
     def _database_url() -> str:
         explicit = os.environ.get("LICENSING_DATABASE_URL", "").strip()
         if explicit:
-            return explicit
+            return normalize_database_url(explicit)
+
+        # Vercel Postgres / Storage integration injects these names:
+        for key in (
+            "POSTGRES_URL",
+            "DATABASE_URL",
+            "PRISMA_DATABASE_URL",
+            "POSTGRES_PRISMA_URL",
+        ):
+            raw = os.environ.get(key, "").strip()
+            if raw:
+                return normalize_database_url(raw)
+
         if os.environ.get("VERCEL"):
-            # Ephemeral; use Neon/Vercel Postgres in production (set LICENSING_DATABASE_URL).
             return "sqlite:////tmp/licensing.db"
         return "sqlite:///./data/licensing.db"
 
