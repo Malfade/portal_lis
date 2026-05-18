@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Клиенты{% endblock %}
+{% block body %}
+<p><a href="/admin/logout">Выйти</a></p>
+<h1>Клиенты</h1>
+<div class="card">
+  <h2>Новый клиент</h2>
+  <form method="post" action="/admin/customers">
+    <p><label>Название<br/><input type="text" name="name" required maxlength="255"/></label></p>
+    <p><input type="submit" value="Создать"/></p>
+  </form>
+</div>
+<h2>Список</h2>
+<table>
+  <thead><tr><th>Название</th><th>ID</th></tr></thead>
+  <tbody>
+  {% for c in customers %}
+    <tr><td><a href="/admin/customers/{{ c.id }}">{{ c.name }}</a></td><td class="mono">{{ c.id }}</td></tr>
+  {% else %}
+    <tr><td colspan="2">Нет клиентов</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

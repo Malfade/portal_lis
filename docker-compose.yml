@@ -1,0 +1,16 @@
+services:
+  licensing-portal:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - secrets.env
+    environment:
+      LICENSING_SESSION_SECRET: ${LICENSING_SESSION_SECRET:-dev-change-me}
+      LICENSING_DATABASE_URL: sqlite:////data/licensing.db
+      LICENSING_RATE_LIMIT_PER_MINUTE: "120"
+    volumes:
+      - licensing_data:/data
+
+volumes:
+  licensing_data:
